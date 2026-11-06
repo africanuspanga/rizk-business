@@ -11,7 +11,7 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       { name: 'theme-color', content: '#f6f1ec' },
       { title: 'RIZK · Risk to get Rizk' },
-      { name: 'description', content: 'Fungua duka lako la mtandaoni kwa dakika 5. Link moja kwa Instagram, TikTok na WhatsApp.' },
+      { name: 'description', content: 'Open your online shop in 5 minutes. One link for Instagram, TikTok and WhatsApp. Orders, Lipa Namba and cash on delivery.' },
     ],
     links: [
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -34,7 +34,7 @@ function Root() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sw">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

@@ -17,17 +17,19 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Arch, DiamondRow, Lattice, Rosette } from '#/components/motifs'
-import { LangSwitch } from '#/components/ui'
 import { CATEGORIES } from '#/lib/format'
-import { useLang, useT } from '#/lib/i18n'
+
 
 export const Route = createFileRoute('/')({ component: Landing })
+
+/** The landing page is English only for now (owner, 2026-11-06). Swahili strings stay beside each line for later. */
+const en = (_sw: string, english: string) => english
 
 /* Black and white only. Ink, paper, and greys between. */
 const INK = '#0e0e0e'
 
 function Landing() {
-  const t = useT()
+  const t = en
   const { session } = Route.useRouteContext()
   const start = session.user ? (session.shop ? '/app' : '/onboard') : '/signup'
   const startLabel = session.shop ? t('Nenda kwenye duka', 'Go to my shop') : t('Fungua duka bure', 'Open your shop free')
@@ -83,7 +85,7 @@ function Display({ children, className = '' }: { children: ReactNode; className?
 /* ---------- Nav ---------- */
 
 function Nav({ start, signedIn }: { start: string; signedIn: boolean }) {
-  const t = useT()
+  const t = en
   return (
     <header className="sticky top-3 z-40 rounded-[22px] bg-white/90 p-2 backdrop-blur md:top-5">
       <div className="flex items-center gap-2">
@@ -104,7 +106,6 @@ function Nav({ start, signedIn }: { start: string; signedIn: boolean }) {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2 md:ml-0">
-          <LangSwitch />
           {!signedIn && (
             <Link to="/login" className="hidden px-2 text-[15px] sm:block">
               {t('Ingia', 'Log in')}
@@ -123,7 +124,7 @@ function Nav({ start, signedIn }: { start: string; signedIn: boolean }) {
 /* ---------- Hero ---------- */
 
 function Hero({ start, startLabel }: { start: string; startLabel: string }) {
-  const t = useT()
+  const t = en
   return (
     <div className="mt-3 grid grid-cols-1 gap-3 md:mt-5 md:grid-cols-[1.05fr_1fr] md:gap-5">
       {/* Words */}
@@ -157,16 +158,12 @@ function Hero({ start, startLabel }: { start: string; startLabel: string }) {
 
         <div className="flex-1" />
         <div className="mt-12 flex items-center gap-4 rounded-[20px] border border-black/10 p-4">
-          <div className="flex -space-x-2">
-            {['M', 'X', 'A', 'H'].map((l) => (
-              <span key={l} className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#0e0e0e] text-xs font-bold text-white">
-                {l}
-              </span>
-            ))}
-          </div>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0e0e0e] text-white">
+            <ReceiptText size={19} />
+          </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-semibold">{t('Lipa Namba ya mtandao wowote', 'Any network’s Lipa Namba')}</p>
-            <p className="truncate text-[13px] text-[#6b6b6b]">M-Pesa · Mixx by Yas · Airtel Money · HaloPesa</p>
+            <p className="text-[15px] font-semibold">{t('Oda zinakuja kamili', 'Orders arrive complete')}</p>
+            <p className="text-[13px] text-[#6b6b6b]">{t('Jina, namba, eneo na alama ya karibu', 'Name, number, area and a nearby landmark')}</p>
           </div>
           <ShieldCheck size={22} className="hidden shrink-0 sm:block" />
         </div>
@@ -220,7 +217,7 @@ function Tile({ dark, kind }: { dark: boolean; kind: 'lattice' | 'diamond' }) {
 }
 
 function PhoneScreen() {
-  const t = useT()
+  const t = en
   return (
     <div className="h-full rounded-t-[130px] rounded-b-[18px] bg-white px-3 pt-12 text-[#0e0e0e]">
       <div className="flex items-center gap-2">
@@ -253,8 +250,7 @@ function PhoneScreen() {
 /* ---------- Strip ---------- */
 
 function Strip() {
-  const lang = useLang()
-  const items = CATEGORIES.filter((c) => c.id !== 'other').map((c) => c[lang])
+  const items = CATEGORIES.filter((c) => c.id !== 'other').map((c) => c.en)
   const row = [...items, ...items]
   return (
     <div className="mt-3 overflow-hidden rounded-[22px] bg-white/60 py-6 md:mt-5">
@@ -273,7 +269,7 @@ function Strip() {
 /* ---------- How it works ---------- */
 
 function Steps() {
-  const t = useT()
+  const t = en
   const steps = [
     [Store, t('Fungua duka', 'Open your shop'), t('Jina, link na WhatsApp yako. Weka Lipa Namba na maeneo ya delivery.', 'Your name, link and WhatsApp. Add your Lipa Namba and delivery areas.')],
     [Package, t('Weka bidhaa', 'Add products'), t('Piga picha kwa simu, weka bei na idadi. Picha zinapunguzwa ili wateja watumie bando kidogo.', 'Snap a photo, set price and stock. Photos are shrunk so buyers spend less data.')],
@@ -310,7 +306,7 @@ function Steps() {
 /* ---------- Payments ---------- */
 
 function Payments() {
-  const t = useT()
+  const t = en
   return (
     <Section id="pay">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
@@ -320,12 +316,12 @@ function Payments() {
           <p className="mt-5 text-[16px] leading-relaxed text-[#4a4a4a]">
             {t(
               'Mteja analipa Lipa Namba yako moja kwa moja, kisha anabandika SMS ya malipo. RIZK inakagua kiasi, jina na namba ya muamala, na haikubali muamala uliotumika kwenye oda nyingine. Wewe unathibitisha kwa kubofya mara moja.',
-              'The buyer pays your Lipa Namba directly, then pastes the payment SMS. RIZK checks the amount, the name and the transaction ID, and refuses one already used on another order. You confirm with one tap.',
+              'The buyer pays your Lipa Namba, then pastes the payment confirmation SMS. RIZK checks the amount, the name and the transaction ID, and refuses one already used on another order. You confirm with one tap.',
             )}
           </p>
           <ul className="mt-8 divide-y divide-black/10 border-y border-black/10">
             {[
-              [Smartphone, 'M-Pesa · Mixx by Yas · Airtel Money · HaloPesa'],
+              [Smartphone, t('Lipa Namba yako, na ukaguzi wa SMS', 'Your own Lipa Namba, with an SMS check')],
               [Banknote, t('Cash wakati wa kupokea, ukitaka', 'Cash on delivery, if you want it')],
               [ShieldCheck, t('RIZK haishiki pesa yako hata siku moja', 'RIZK never holds your money')],
             ].map(([Icon, label]) => {
@@ -370,7 +366,7 @@ function Payments() {
 /* ---------- Orders ---------- */
 
 function Orders() {
-  const t = useT()
+  const t = en
   const statuses = [t('Imepokelewa', 'Received'), t('Imethibitishwa', 'Confirmed'), t('Njiani', 'On the way'), t('Imefika', 'Delivered')]
   return (
     <Section>
@@ -424,7 +420,7 @@ function Orders() {
 /* ---------- Dashboard ---------- */
 
 function Dashboard() {
-  const t = useT()
+  const t = en
   const bars = [22, 38, 30, 55, 42, 68, 90]
   return (
     <Section>
@@ -466,7 +462,7 @@ function Dashboard() {
 /* ---------- Everything else ---------- */
 
 function Everything() {
-  const t = useT()
+  const t = en
   const items = [
     [Link2, t('Link yako', 'Your own link'), 'rizk.tz/dukalako'],
     [Package, t('Bidhaa na stock', 'Products and stock'), t('Picha 6, bei, punguzo, idadi', '6 photos, price, sale, stock')],
@@ -474,7 +470,7 @@ function Everything() {
     [Banknote, t('Cash ukipokea', 'Cash on delivery'), t('Washa au zima', 'Turn on or off')],
     [MapPin, 'Delivery', t('Maeneo na bei zako', 'Your areas and fees')],
     [ReceiptText, t('Oda', 'Orders'), t('Hatua kwa hatua', 'Step by step')],
-    [MessageCircle, 'WhatsApp', t('Oda na maswali moja kwa moja', 'Orders and questions, direct')],
+    [MessageCircle, 'WhatsApp', t('Oda na maswali moja kwa moja', 'Orders and questions in your chats')],
     [BarChart3, t('Takwimu', 'Analytics'), t('Wageni, mauzo, vyanzo', 'Visitors, sales, sources')],
   ] as const
   return (
@@ -501,7 +497,7 @@ function Everything() {
 /* ---------- Pricing ---------- */
 
 function Pricing({ start }: { start: string }) {
-  const t = useT()
+  const t = en
   return (
     <Section id="pricing">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
@@ -543,10 +539,10 @@ function Pricing({ start }: { start: string }) {
 /* ---------- FAQ ---------- */
 
 function Faq() {
-  const t = useT()
+  const t = en
   const qs = [
     [t('RIZK inagharimu kiasi gani?', 'What does RIZK cost?'), t('Ni bure kuanza, na hatuchukui kamisheni kwenye mauzo yako. Tutatangaza vifurushi vya kulipia mapema kabla havijaanza.', 'It is free to start and we take no commission on your sales. We will announce paid plans well before they start.')],
-    [t('Napokeaje pesa?', 'How do I get paid?'), t('Mteja analipa Lipa Namba au namba yako moja kwa moja, au cash akipokea mzigo. Pesa haipiti kwetu.', 'The buyer pays your Lipa Namba or number directly, or cash on delivery. The money never passes through us.')],
+    [t('Napokeaje pesa?', 'How do I get paid?'), t('Mteja analipa Lipa Namba au namba yako moja kwa moja, au cash akipokea mzigo. Pesa haipiti kwetu.', 'The buyer pays your Lipa Namba or cash on delivery, the way they already pay sellers today. The money never passes through us.')],
     [t('Nitajuaje kama mteja amelipa kweli?', 'How do I know a buyer really paid?'), t('Mteja anabandika SMS ya malipo. Tunakagua kiasi, jina na namba ya muamala, na tunakataa muamala uliotumika tayari. Bado angalia simu yako kabla ya kuthibitisha.', 'The buyer pastes the payment SMS. We check the amount, name and transaction ID and refuse one already used. Still check your phone before you confirm.')],
     [t('Nahitaji website au programmer?', 'Do I need a website or a developer?'), t('Hapana. Unafungua duka kwenye simu yako kwa dakika chache, na unapata link ya kushiriki.', 'No. You open the shop on your phone in a few minutes and get a link to share.')],
     [t('Nani anafanya delivery?', 'Who does the delivery?'), t('Kwa sasa wewe, na boda yako. Unaweka maeneo yako na bei ya delivery kila eneo, na mteja anachagua wakati wa kuagiza.', 'For now you do, with your own boda. You set your areas and a fee for each, and the buyer picks one when ordering.')],
@@ -578,7 +574,7 @@ function Faq() {
 /* ---------- Closing ---------- */
 
 function Closing({ start, startLabel }: { start: string; startLabel: string }) {
-  const t = useT()
+  const t = en
   return (
     <Section className="pb-10">
       <div className="relative overflow-hidden rounded-[28px] bg-[#0e0e0e] px-6 py-16 text-center text-white md:py-24">
