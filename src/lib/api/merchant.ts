@@ -121,7 +121,8 @@ export const getDashboard = createServerFn({ method: 'GET' }).handler(async () =
   const before = since - 7 * 86400_000
   // Days are counted in Tanzania time (UTC+3).
   const TZ = 3 * 3600_000
-  const [sales, visits, open, recent, top, productCount, setup, prev, daily, counts] = await Promise.all([
+  const todayStart = Math.floor((now() + TZ) / 86400_000) * 86400_000 - TZ
+  const [sales, visits, open, recent, top, productCount, setup, prev, daily, counts, today, queue] = await Promise.all([
     first<{ n: number; total: number }>(
       `SELECT COUNT(*) n, COALESCE(SUM(total), 0) total FROM orders
        WHERE shop_id = ? AND created_at > ? AND status IN ('confirmed','dispatched','delivered')`,
@@ -138,9 +139,11 @@ export const getDashboard = createServerFn({ method: 'GET' }).handler(async () =
       `SELECT COUNT(*) n FROM orders WHERE shop_id = ? AND status IN ('awaiting_payment','payment_claimed','confirmed')`,
       shop.id,
     ),
-    all<{ id: string; code: string; customer_name: string; total: number; status: OrderStatus; created_at: number }>(
-      `SELECT id, code, customer_name, total, status, created_at FROM orders WHERE shop_id = ?
-       ORDER BY created_at DESC LIMIT 5`,
+    all<{ id: string; code: string; customer_name: string; total: number; status: OrderStatus; created_at: number; items: number; image: string | null }>(
+      `SELECT o.id, o.code, o.customer_name, o.total, o.status, o.created_at,
+         (SELECT SUM(qty) FROM order_items WHERE order_id = o.id) items,
+         (SELECT image FROM order_items WHERE order_id = o.id LIMIT 1) image
+       FROM orders o WHERE o.shop_id = ? ORDER BY o.created_at DESC LIMIT 5`,
       shop.id,
     ),
     all<{ id: string; name: string; images: string; price: number; views: number; sold: number }>(
@@ -182,13 +185,28 @@ export const getDashboard = createServerFn({ method: 'GET' }).handler(async () =
       shop.id,
       since,
     ),
+    first<{ total: number; orders: number }>(
+      `SELECT COALESCE(SUM(CASE WHEN status IN ('confirmed','dispatched','delivered') THEN total END), 0) total,
+         COUNT(*) orders FROM orders WHERE shop_id = ? AND created_at >= ?`,
+      shop.id,
+      todayStart,
+    ),
+    first<{ to_confirm: number; to_send: number; on_the_way: number }>(
+      `SELECT SUM(status IN ('awaiting_payment','payment_claimed')) to_confirm,
+         SUM(status = 'confirmed') to_send, SUM(status = 'dispatched') on_the_way
+       FROM orders WHERE shop_id = ? AND created_at > ?`,
+      shop.id,
+      now() - 30 * 86400_000,
+    ),
   ])
-  const today = Math.floor((now() + TZ) / 86400_000)
+  const todayDay = Math.floor((now() + TZ) / 86400_000)
   const days = Array.from({ length: 7 }, (_, i) => {
-    const day = today - 6 + i
+    const day = todayDay - 6 + i
     return { day: day * 86400_000, total: daily.find((d) => d.day === day)?.total ?? 0 }
   })
   return {
+    today: { total: today?.total ?? 0, orders: today?.orders ?? 0 },
+    queue: { toConfirm: queue?.to_confirm ?? 0, toSend: queue?.to_send ?? 0, onTheWay: queue?.on_the_way ?? 0 },
     days,
     prev: prev ?? { total: 0, orders: 0, visits: 0 },
     counts: {

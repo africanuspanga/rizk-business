@@ -76,10 +76,10 @@ export type OrderStatus =
   | 'cancelled'
 
 export const STATUS_LABEL: Record<OrderStatus, { sw: string; en: string; tone: string }> = {
-  awaiting_payment: { sw: 'Inasubiri malipo', en: 'Awaiting payment', tone: 'bg-peach text-ink' },
-  payment_claimed: { sw: 'Thibitisha malipo', en: 'Check payment', tone: 'bg-[#fbe7b5] text-ink' },
-  confirmed: { sw: 'Imethibitishwa', en: 'Confirmed', tone: 'bg-sky text-ink' },
-  dispatched: { sw: 'Njiani', en: 'On the way', tone: 'bg-lilac text-ink' },
-  delivered: { sw: 'Imefika', en: 'Delivered', tone: 'bg-lime text-ink' },
-  cancelled: { sw: 'Imesitishwa', en: 'Cancelled', tone: 'bg-line text-muted' },
+  awaiting_payment: { sw: 'Inasubiri malipo', en: 'Awaiting payment', tone: 'bg-[#efeeeb] text-ink' },
+  payment_claimed: { sw: 'Thibitisha malipo', en: 'Check payment', tone: 'bg-ink text-white' },
+  confirmed: { sw: 'Imethibitishwa', en: 'Confirmed', tone: 'border border-ink/80 bg-white text-ink' },
+  dispatched: { sw: 'Njiani', en: 'On the way', tone: 'bg-[#e2e1de] text-ink' },
+  delivered: { sw: 'Imefika', en: 'Delivered', tone: 'bg-[#f3f2f0] text-muted' },
+  cancelled: { sw: 'Imesitishwa', en: 'Cancelled', tone: 'bg-[#f3f2f0] text-muted line-through' },
 }

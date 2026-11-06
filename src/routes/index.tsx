@@ -16,7 +16,7 @@ import {
   Store,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Arch, DiamondRow, Lattice, Rosette } from '#/components/motifs'
+import { Arch, Lattice, Rosette } from '#/components/motifs'
 import { CATEGORIES } from '#/lib/format'
 
 
@@ -25,8 +25,6 @@ export const Route = createFileRoute('/')({ component: Landing })
 /** The landing page is English only for now (owner, 2026-11-06). Swahili strings stay beside each line for later. */
 const en = (_sw: string, english: string) => english
 
-/* Black and white only. Ink, paper, and greys between. */
-const INK = '#0e0e0e'
 
 function Landing() {
   const t = en
@@ -175,7 +173,16 @@ function Hero({ start, startLabel }: { start: string; startLabel: string }) {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0e0e0e] to-transparent" />
         <Arch dark className="relative mx-auto h-[520px] w-[290px] md:h-[600px] md:w-[320px]">
           <div className="h-full bg-[#1b1b1b] p-2 pt-16">
-            <PhoneScreen />
+            <div className="h-full overflow-hidden rounded-t-[130px] rounded-b-[18px] bg-[#fafaf9] pt-14">
+              <img
+                src="/images/rizk-seller-dashboard-phone.webp"
+                width={780}
+                height={1328}
+                alt="Rizk seller dashboard on a phone: sales today, orders to confirm and send, and new orders"
+                className="w-full"
+                fetchPriority="high"
+              />
+            </div>
           </div>
         </Arch>
         <div className="absolute right-4 bottom-6 left-4 z-10 mx-auto flex max-w-[330px] items-center gap-3 rounded-full bg-white py-2 pr-4 pl-2 text-[#0e0e0e] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
@@ -187,61 +194,6 @@ function Hero({ start, startLabel }: { start: string; startLabel: string }) {
             <span className="block text-[12px] text-[#6b6b6b]">{t('Kiasi, jina na muamala', 'Amount, name and transaction')}</span>
           </span>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* Product tiles drawn in black and white kanga and jali patterns, never stock photos. */
-const TILES = [
-  { name: 'Kanga ya Pwani', price: '15,000', dark: true, kind: 'lattice' },
-  { name: 'Gauni la kitenge', price: '35,000', dark: false, kind: 'diamond' },
-  { name: 'Manukato Oud', price: '45,000', dark: false, kind: 'lattice' },
-  { name: 'Sandali za ngozi', price: '28,000', dark: true, kind: 'diamond' },
-] as const
-
-function Tile({ dark, kind }: { dark: boolean; kind: 'lattice' | 'diamond' }) {
-  return (
-    <div className={`relative aspect-square overflow-hidden ${dark ? 'bg-[#0e0e0e] text-white' : 'bg-[#ecebe8] text-[#0e0e0e]'}`}>
-      {kind === 'lattice' ? (
-        <Lattice size={22} stroke="currentColor" opacity={0.45} />
-      ) : (
-        <div className="absolute inset-0 flex flex-col justify-around py-1">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <DiamondRow key={i} className="opacity-60" />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function PhoneScreen() {
-  const t = en
-  return (
-    <div className="h-full rounded-t-[130px] rounded-b-[18px] bg-white px-3 pt-12 text-[#0e0e0e]">
-      <div className="flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0e0e0e] font-display text-[15px] text-white">Z</span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold">Zuri Fashion</p>
-          <p className="text-[9px] text-[#6b6b6b]">rizk.tz/zuri-fashion</p>
-        </div>
-      </div>
-      <div className="mt-3 flex gap-1.5">
-        <span className="rounded-full bg-[#0e0e0e] px-2.5 py-1 text-[9px] font-semibold text-white">{t('Zote', 'All')}</span>
-        <span className="rounded-full border border-black/10 px-2.5 py-1 text-[9px] font-semibold">{t('Mpya', 'New')}</span>
-        <span className="rounded-full border border-black/10 px-2.5 py-1 text-[9px] font-semibold">{t('Punguzo', 'Sale')}</span>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {TILES.map((p) => (
-          <div key={p.name} className="overflow-hidden rounded-xl border border-black/8">
-            <Tile dark={p.dark} kind={p.kind} />
-            <div className="px-2 py-1.5">
-              <p className="truncate text-[10px] font-semibold">{p.name}</p>
-              <p className="text-[10px]">TSh {p.price}</p>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   )
@@ -421,7 +373,6 @@ function Orders() {
 
 function Dashboard() {
   const t = en
-  const bars = [22, 38, 30, 55, 42, 68, 90]
   return (
     <Section>
       <div className="text-center">
@@ -431,30 +382,18 @@ function Dashboard() {
           {t('Mauzo, oda, wageni na bidhaa zinazopendwa. Pia unajua wateja wametoka Instagram, TikTok au WhatsApp.', 'Sales, orders, visitors and your best products. You also see whether buyers came from Instagram, TikTok or WhatsApp.')}
         </p>
       </div>
-      <Panel className="mx-auto mt-10 max-w-[960px] overflow-hidden">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {[
-            [t('Mauzo', 'Sales'), 'TSh 1.2M', '+22%'],
-            [t('Oda', 'Orders'), '38', '+12%'],
-            [t('Wageni', 'Visitors'), '1,240', '+31%'],
-            [t('Wanaonunua', 'Conversion'), '3.1%', '+0.4%'],
-          ].map(([l, v, d], i) => (
-            <div key={l} className={`border-black/10 p-5 md:p-6 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b md:border-b-0' : ''} ${i === 1 ? 'md:border-r' : ''}`}>
-              <p className="text-[13px] text-[#6b6b6b]">{l}</p>
-              <p className="mt-1 font-display text-[34px] leading-none md:text-[40px]">{v}</p>
-              <span className="mt-3 inline-block rounded-full border border-black/15 px-2 py-0.5 text-xs font-semibold">{d}</span>
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-black/10 p-6">
-          <div className="flex h-36 items-end gap-2 md:gap-4">
-            {bars.map((h, i) => (
-              <span key={i} className="flex-1 rounded-t-full" style={{ height: `${h}%`, background: i === bars.length - 1 ? INK : '#e6e5e2' }} />
-            ))}
-          </div>
-        </div>
-      </Panel>
-      <p className="mt-3 text-center text-xs text-[#6b6b6b]">{t('Mfano wa namba, si data halisi.', 'Example numbers, not real data.')}</p>
+      <div className="relative mx-auto mt-10 max-w-[1100px] overflow-hidden rounded-[28px] bg-[#0e0e0e] p-2 md:p-3">
+        <Lattice size={46} stroke="#fff" opacity={0.1} />
+        <img
+          src="/images/rizk-seller-dashboard-desktop.webp"
+          width={1600}
+          height={1111}
+          loading="lazy"
+          alt="Rizk seller dashboard on a laptop: sales today, new orders, and the last 7 days of sales, orders, visitors and conversion"
+          className="relative w-full rounded-[20px]"
+        />
+      </div>
+      <p className="mt-3 text-center text-xs text-[#6b6b6b]">{t('Duka la mfano, Zuri Fashion. Namba ni za mfano.', 'Demo shop, Zuri Fashion. Example data.')}</p>
     </Section>
   )
 }

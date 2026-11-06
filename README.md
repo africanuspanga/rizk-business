@@ -36,6 +36,17 @@ npx wrangler d1 migrations apply rizk --local
 npm run dev            # http://localhost:3000
 ```
 
+## Demo shop (local only)
+
+```bash
+node scripts/seed-demo.mjs
+```
+
+Creates Zuri Fashion at `/zuri-fashion` with 10 products and about 90 days of fictional orders and
+visits, growing month on month, for screenshots and testing. The login is in the script's header.
+The landing page images in `public/images/rizk-seller-dashboard-*.webp` are screenshots of this demo
+shop and say so on the page.
+
 ## First deploy
 
 ```bash
