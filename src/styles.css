@@ -1,0 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-canvas: #f6f1ec;
+  --color-card: #fffdfb;
+  --color-ink: #1f1b18;
+  --color-muted: #8a817a;
+  --color-line: #ece4dc;
+  --color-peach: #f7e2d3;
+  --color-peach-deep: #e9a37c;
+  --color-lime: #e7ecca;
+  --color-lilac: #ebe4f4;
+  --color-sky: #dfeaf3;
+  --color-ok: #4f9a3c;
+  --color-warn: #c27a12;
+  --color-bad: #c2412d;
+  --radius-card: 28px;
+}
+
+html,
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+@layer components {
+  .card {
+    background: var(--color-card);
+    border-radius: var(--radius-card);
+    box-shadow:
+      0 1px 2px rgba(60, 40, 20, 0.04),
+      0 10px 28px rgba(60, 40, 20, 0.06);
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--color-card);
+    box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--color-card);
+    box-shadow: 0 4px 14px rgba(60, 40, 20, 0.06);
+  }
+  .chip[data-active="true"] {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 54px;
+    padding: 0 24px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--color-ink);
+    color: #fff;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+  }
+  .btn-soft {
+    background: var(--color-card);
+    color: var(--color-ink);
+    box-shadow: 0 4px 14px rgba(60, 40, 20, 0.08);
+  }
+  .btn-sm {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+  .field {
+    display: block;
+  }
+  .field > span {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted);
+    margin: 0 0 6px 4px;
+  }
+  .input {
+    width: 100%;
+    height: 52px;
+    padding: 0 18px;
+    border-radius: 18px;
+    background: var(--color-card);
+    border: 1.5px solid var(--color-line);
+    font-size: 16px;
+    outline: none;
+  }
+  textarea.input {
+    height: auto;
+    min-height: 96px;
+    padding: 14px 18px;
+    resize: vertical;
+  }
+  .input:focus {
+    border-color: var(--color-ink);
+  }
+  .hide-scroll {
+    scrollbar-width: none;
+  }
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Merchant app: flat, clean panels (white, thin borders, no soft shadows). */
+.app-shell {
+  background: #fafaf9;
+  min-height: 100dvh;
+}
+.app-shell .card {
+  border-radius: 16px;
+  box-shadow: none;
+  border: 1px solid #ebe9e6;
+  background: #fff;
+}
+.app-shell .chip {
+  box-shadow: none;
+  border: 1px solid #ebe9e6;
+  background: #fff;
+}
+.app-shell .chip[data-active="true"] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: #fff;
+}
+.app-shell .icon-btn {
+  box-shadow: none;
+  border: 1px solid #ebe9e6;
+  background: #fff;
+}
+.app-shell .btn-soft {
+  box-shadow: none;
+  border: 1px solid #ebe9e6;
+}
+.app-shell .input {
+  border-radius: 12px;
+  border-color: #e5e3e0;
+}
+.app-shell .btn {
+  border-radius: 12px;
+  height: 50px;
+}
+.app-shell .btn-sm {
+  height: 40px;
+}
