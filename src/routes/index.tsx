@@ -1,10 +1,10 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   ArrowRight,
+  ArrowUpRight,
   BarChart3,
   Banknote,
   Check,
-  CheckCircle2,
   ChevronDown,
   Link2,
   MapPin,
@@ -16,13 +16,15 @@ import {
   Store,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { Arch, DiamondRow, Lattice, Rosette } from '#/components/motifs'
 import { LangSwitch } from '#/components/ui'
 import { CATEGORIES } from '#/lib/format'
 import { useLang, useT } from '#/lib/i18n'
 
 export const Route = createFileRoute('/')({ component: Landing })
 
-const GREEN = '#3d8a56'
+/* Black and white only. Ink, paper, and greys between. */
+const INK = '#0e0e0e'
 
 function Landing() {
   const t = useT()
@@ -31,10 +33,12 @@ function Landing() {
   const startLabel = session.shop ? t('Nenda kwenye duka', 'Go to my shop') : t('Fungua duka bure', 'Open your shop free')
 
   return (
-    <div className="overflow-x-hidden">
-      <Nav start={start} signedIn={!!session.user} />
-      <Hero start={start} startLabel={startLabel} />
-      <Categories />
+    <div className="min-h-dvh overflow-x-hidden bg-[#efeeeb] text-[#0e0e0e]">
+      <div className="mx-auto max-w-[1280px] px-3 pt-3 md:px-5 md:pt-5">
+        <Nav start={start} signedIn={!!session.user} />
+        <Hero start={start} startLabel={startLabel} />
+        <Strip />
+      </div>
       <Steps />
       <Payments />
       <Orders />
@@ -43,27 +47,37 @@ function Landing() {
       <Pricing start={start} />
       <Faq />
       <Closing start={start} startLabel={startLabel} />
-      <footer className="mx-auto max-w-[1120px] px-4 pt-6 pb-10 text-center text-xs text-muted md:px-8">
-        RIZK · Risk to get Rizk · © {new Date().getFullYear()} Driftmark Technologies Limited · Dar es Salaam
+      <footer className="mx-auto flex max-w-[1280px] flex-col items-center gap-3 px-4 pt-4 pb-10 text-center text-xs text-[#6b6b6b] md:px-5">
+        <Rosette size={14} className="text-[#0e0e0e]" />
+        <p>RIZK · Risk to get Rizk · © {new Date().getFullYear()} Driftmark Technologies Limited · Dar es Salaam</p>
       </footer>
     </div>
   )
 }
 
-function Wrap({ children, className = '', id }: { children: ReactNode; className?: string; id?: string }) {
+function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <div className={`rounded-[28px] bg-white ${className}`}>{children}</div>
+}
+
+function Section({ children, id, className = '' }: { children: ReactNode; id?: string; className?: string }) {
   return (
-    <section id={id} className={`mx-auto w-full max-w-[1120px] px-4 md:px-8 ${className}`}>
+    <section id={id} className={`mx-auto max-w-[1280px] scroll-mt-24 px-3 pt-16 md:px-5 md:pt-24 ${className}`}>
       {children}
     </section>
   )
 }
 
 function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="text-xs font-bold tracking-[0.14em] text-muted uppercase">{children}</p>
+  return (
+    <p className="inline-flex items-center gap-2 border-b border-black/15 pb-1.5 text-[13px] font-medium tracking-[0.08em] uppercase">
+      <span className="h-2 w-2 rounded-full bg-[#0e0e0e]" />
+      {children}
+    </p>
+  )
 }
 
-function H2({ children }: { children: ReactNode }) {
-  return <h2 className="mt-2 text-[32px] leading-[1.05] font-extrabold tracking-tight md:text-[48px]">{children}</h2>
+function Display({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <h2 className={`font-display text-[44px] leading-[0.95] tracking-[-0.01em] md:text-[68px] ${className}`}>{children}</h2>
 }
 
 /* ---------- Nav ---------- */
@@ -71,24 +85,34 @@ function H2({ children }: { children: ReactNode }) {
 function Nav({ start, signedIn }: { start: string; signedIn: boolean }) {
   const t = useT()
   return (
-    <header className="sticky top-0 z-40 border-b border-transparent bg-canvas/85 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1120px] items-center gap-3 px-4 md:px-8">
-        <span className="text-[22px] font-extrabold tracking-tight">RIZK</span>
-        <nav className="ml-6 hidden gap-6 text-[15px] text-ink/70 md:flex">
-          <a href="#how">{t('Inavyofanya kazi', 'How it works')}</a>
-          <a href="#pay">{t('Malipo', 'Payments')}</a>
-          <a href="#pricing">{t('Bei', 'Pricing')}</a>
-          <a href="#faq">{t('Maswali', 'FAQ')}</a>
+    <header className="sticky top-3 z-40 rounded-[22px] bg-white/90 p-2 backdrop-blur md:top-5">
+      <div className="flex items-center gap-2">
+        <Link to="/" className="flex h-11 items-center gap-2 rounded-[14px] border border-black/10 bg-[#f6f5f3] px-3.5">
+          <Rosette size={16} className="[--rosette-hole:#f6f5f3]" />
+          <span className="font-display text-[24px] leading-none">Rizk</span>
+        </Link>
+        <nav className="mx-auto hidden items-center gap-1 text-[15px] md:flex">
+          {[
+            ['#how', t('Inavyofanya kazi', 'How it works')],
+            ['#pay', t('Malipo', 'Payments')],
+            ['#pricing', t('Bei', 'Pricing')],
+            ['#faq', t('Maswali', 'FAQ')],
+          ].map(([href, label]) => (
+            <a key={href} href={href} className="rounded-full px-3.5 py-1.5 hover:bg-[#f2f1ee]">
+              {label}
+            </a>
+          ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 md:ml-0">
           <LangSwitch />
           {!signedIn && (
-            <Link to="/login" className="hidden px-3 text-[15px] font-semibold sm:block">
+            <Link to="/login" className="hidden px-2 text-[15px] sm:block">
               {t('Ingia', 'Log in')}
             </Link>
           )}
-          <Link to={start} className="btn btn-sm">
-            {signedIn ? t('Duka langu', 'My shop') : t('Fungua duka', 'Open shop')} <ArrowRight size={16} />
+          <Link to={start} className="flex h-11 items-center gap-2 rounded-[14px] bg-[#0e0e0e] px-4 text-[15px] font-semibold text-white">
+            {signedIn ? t('Duka langu', 'My shop') : t('Fungua duka', 'Open shop')}
+            <ArrowRight size={16} />
           </Link>
         </div>
       </div>
@@ -101,166 +125,144 @@ function Nav({ start, signedIn }: { start: string; signedIn: boolean }) {
 function Hero({ start, startLabel }: { start: string; startLabel: string }) {
   const t = useT()
   return (
-    <div className="relative">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(60%_60%_at_50%_0%,#f7e2d3_0%,transparent_70%)]" />
-      <Wrap className="pt-10 text-center md:pt-20">
-        <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-semibold shadow-[0_4px_14px_rgba(60,40,20,0.06)]">
-          <span className="h-2 w-2 rounded-full" style={{ background: GREEN }} />
-          <span className="sm:hidden">{t('Kwa wauzaji wa mitandaoni', 'For social sellers')}</span>
-          <span className="hidden sm:inline">{t('Kwa wauzaji wa Instagram, TikTok na WhatsApp', 'For Instagram, TikTok and WhatsApp sellers')}</span>
-        </span>
-        <h1 className="mx-auto mt-6 max-w-[900px] text-[44px] leading-[0.98] font-extrabold tracking-[-0.03em] md:text-[84px]">
-          {/* Brand tagline: English wordplay in both languages (risk = courage, rizk = riziki, livelihood). */}
-          <span className="block">Risk to get</span>
-          <span className="block" style={{ color: GREEN }}>
-            Rizk.
-          </span>
-        </h1>
-        <p className="mx-auto mt-6 max-w-[620px] text-[16px] leading-relaxed text-ink/70 md:text-[19px]">
-          {t(
-            'Fungua duka la mtandaoni kwa dakika 5. Wateja wanaagiza wenyewe kwa jina, namba na eneo, wanalipa Lipa Namba yako au cash wakipokea, na wewe unaona kila oda sehemu moja. Hakuna tena DM elfu.',
-            'Open an online shop in 5 minutes. Buyers order by themselves with their name, number and area, pay your Lipa Namba or cash on delivery, and you see every order in one place. No more endless DMs.',
-          )}
-        </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link to={start} className="btn w-full sm:w-auto">
-            {startLabel} <ArrowRight size={18} />
-          </Link>
-          <a href="#how" className="btn btn-soft w-full sm:w-auto">
-            {t('Ona inavyofanya kazi', 'See how it works')}
-          </a>
+    <div className="mt-3 grid grid-cols-1 gap-3 md:mt-5 md:grid-cols-[1.05fr_1fr] md:gap-5">
+      {/* Words */}
+      <Panel className="flex min-w-0 flex-col p-6 md:p-12">
+        <div className="pt-4 md:pt-10">
+          <Eyebrow>{t('Kwa wauzaji wa mitandaoni', 'For social sellers')}</Eyebrow>
+          <h1 className="mt-6 font-display text-[64px] leading-[0.9] tracking-[-0.015em] md:text-[112px]">
+            Risk to get <em className="italic">Rizk.</em>
+          </h1>
+          <p className="mt-6 max-w-[500px] text-[17px] leading-relaxed text-[#4a4a4a]">
+            {t(
+              'Duka la mtandaoni linaloishi kwenye link moja. Wateja wanaagiza wenyewe, wanalipa Lipa Namba yako au cash wakipokea, na wewe unaona kila oda sehemu moja.',
+              'An online shop that lives in one link. Buyers order by themselves, pay your Lipa Namba or cash on delivery, and you see every order in one place.',
+            )}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-5">
+            <Link to={start} className="flex h-14 items-center gap-3 rounded-[16px] bg-[#0e0e0e] pr-5 pl-2 text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-[11px] bg-white/12">
+                <Store size={19} />
+              </span>
+              <span className="text-left leading-tight">
+                <span className="block text-[11px] text-white/60">{t('Dakika 5 tu', 'Just 5 minutes')}</span>
+                <span className="block text-[16px] font-semibold">{startLabel}</span>
+              </span>
+            </Link>
+            <a href="#how" className="flex items-center gap-1.5 border-b border-black/30 pb-1 text-[15px] font-medium">
+              {t('Ona inavyofanya kazi', 'See how it works')} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-ink/70">
-          {[t('Bure kuanza', 'Free to start'), t('Hakuna kamisheni kwenye mauzo', 'No commission on sales'), t('Pesa inaenda kwako moja kwa moja', 'Money goes straight to you')].map((x) => (
-            <li key={x} className="flex items-center gap-1.5">
-              <Check size={16} style={{ color: GREEN }} strokeWidth={3} /> {x}
-            </li>
-          ))}
-        </ul>
-      </Wrap>
-      <Wrap className="mt-12 md:mt-16">
-        <Showcase />
-      </Wrap>
+
+        <div className="flex-1" />
+        <div className="mt-12 flex items-center gap-4 rounded-[20px] border border-black/10 p-4">
+          <div className="flex -space-x-2">
+            {['M', 'X', 'A', 'H'].map((l) => (
+              <span key={l} className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#0e0e0e] text-xs font-bold text-white">
+                {l}
+              </span>
+            ))}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[15px] font-semibold">{t('Lipa Namba ya mtandao wowote', 'Any network’s Lipa Namba')}</p>
+            <p className="truncate text-[13px] text-[#6b6b6b]">M-Pesa · Mixx by Yas · Airtel Money · HaloPesa</p>
+          </div>
+          <ShieldCheck size={22} className="hidden shrink-0 sm:block" />
+        </div>
+      </Panel>
+
+      {/* Product, framed by a door arch on a lattice screen */}
+      <div className="relative overflow-hidden rounded-[28px] bg-[#0e0e0e] px-6 pt-14 text-white md:pt-16">
+        <Lattice size={46} stroke="#fff" opacity={0.13} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0e0e0e] to-transparent" />
+        <Arch dark className="relative mx-auto h-[520px] w-[290px] md:h-[600px] md:w-[320px]">
+          <div className="h-full bg-[#1b1b1b] p-2 pt-16">
+            <PhoneScreen />
+          </div>
+        </Arch>
+        <div className="absolute right-4 bottom-6 left-4 z-10 mx-auto flex max-w-[330px] items-center gap-3 rounded-full bg-white py-2 pr-4 pl-2 text-[#0e0e0e] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0e0e0e] text-white">
+            <Check size={17} strokeWidth={3} />
+          </span>
+          <span className="text-[14px] leading-tight">
+            <b>{t('Malipo yamekaguliwa', 'Payment checked')}</b>
+            <span className="block text-[12px] text-[#6b6b6b]">{t('Kiasi, jina na muamala', 'Amount, name and transaction')}</span>
+          </span>
+        </div>
+      </div>
     </div>
   )
 }
 
-const MOCK_PRODUCTS = [
-  { name: 'Gauni la kitenge', price: '35,000', bg: 'linear-gradient(135deg,#f2b591,#c4613a)' },
-  { name: 'Sandali za ngozi', price: '28,000', bg: 'linear-gradient(135deg,#e9d8b5,#a88a52)' },
-  { name: 'Manukato Oud', price: '45,000', bg: 'linear-gradient(135deg,#d9cdef,#7d68b0)' },
-  { name: 'Kanga mpya', price: '15,000', bg: 'linear-gradient(135deg,#cfe3c4,#5f9a5a)' },
-]
+/* Product tiles drawn in black and white kanga and jali patterns, never stock photos. */
+const TILES = [
+  { name: 'Kanga ya Pwani', price: '15,000', dark: true, kind: 'lattice' },
+  { name: 'Gauni la kitenge', price: '35,000', dark: false, kind: 'diamond' },
+  { name: 'Manukato Oud', price: '45,000', dark: false, kind: 'lattice' },
+  { name: 'Sandali za ngozi', price: '28,000', dark: true, kind: 'diamond' },
+] as const
 
-/** Faux UI of the real product: the storefront, a paid order and the seller's day. */
-function Showcase() {
+function Tile({ dark, kind }: { dark: boolean; kind: 'lattice' | 'diamond' }) {
+  return (
+    <div className={`relative aspect-square overflow-hidden ${dark ? 'bg-[#0e0e0e] text-white' : 'bg-[#ecebe8] text-[#0e0e0e]'}`}>
+      {kind === 'lattice' ? (
+        <Lattice size={22} stroke="currentColor" opacity={0.45} />
+      ) : (
+        <div className="absolute inset-0 flex flex-col justify-around py-1">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <DiamondRow key={i} className="opacity-60" />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function PhoneScreen() {
   const t = useT()
   return (
-    <div className="relative mx-auto flex max-w-[980px] flex-col items-center gap-5 md:flex-row md:items-end md:justify-center md:gap-10">
-      {/* Seller phone */}
-      <Phone className="hidden md:block">
-        <p className="text-[11px] text-muted">{t('Habari, Amina', 'Hello, Amina')}</p>
-        <div className="mt-2 rounded-2xl bg-ink p-3 text-white">
-          <p className="text-[9px] tracking-wider text-white/60 uppercase">{t('Mauzo leo', 'Sales today')}</p>
-          <p className="mt-0.5 text-[20px] font-extrabold">TSh 184,000</p>
-          <p className="text-[10px] text-white/60">{t('Oda 6 · 2 za kufunga', '6 orders · 2 to pack')}</p>
+    <div className="h-full rounded-t-[130px] rounded-b-[18px] bg-white px-3 pt-12 text-[#0e0e0e]">
+      <div className="flex items-center gap-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0e0e0e] font-display text-[15px] text-white">Z</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-semibold">Zuri Fashion</p>
+          <p className="text-[9px] text-[#6b6b6b]">rizk.tz/zuri-fashion</p>
         </div>
-        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center">
-          {[
-            ['2', t('Kufunga', 'To pack')],
-            ['3', t('Njiani', 'Out')],
-            ['41', t('Wageni', 'Visits')],
-          ].map(([n, l]) => (
-            <div key={l} className="rounded-xl border border-line bg-white py-1.5">
-              <p className="text-[14px] font-extrabold">{n}</p>
-              <p className="text-[8px] text-muted">{l}</p>
+      </div>
+      <div className="mt-3 flex gap-1.5">
+        <span className="rounded-full bg-[#0e0e0e] px-2.5 py-1 text-[9px] font-semibold text-white">{t('Zote', 'All')}</span>
+        <span className="rounded-full border border-black/10 px-2.5 py-1 text-[9px] font-semibold">{t('Mpya', 'New')}</span>
+        <span className="rounded-full border border-black/10 px-2.5 py-1 text-[9px] font-semibold">{t('Punguzo', 'Sale')}</span>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {TILES.map((p) => (
+          <div key={p.name} className="overflow-hidden rounded-xl border border-black/8">
+            <Tile dark={p.dark} kind={p.kind} />
+            <div className="px-2 py-1.5">
+              <p className="truncate text-[10px] font-semibold">{p.name}</p>
+              <p className="text-[10px]">TSh {p.price}</p>
             </div>
-          ))}
-        </div>
-        <p className="mt-3 text-[9px] font-bold tracking-wider text-muted uppercase">{t('Oda mpya', 'New orders')}</p>
-        {[
-          ['Baraka M.', '39,000', t('Imelipwa', 'Paid')],
-          ['Neema K.', '28,000', 'Cash'],
-          ['Juma S.', '60,000', t('Imelipwa', 'Paid')],
-        ].map(([n, a, s]) => (
-          <div key={n} className="mt-1.5 flex items-center gap-2 rounded-xl border border-line bg-white px-2 py-1.5">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-peach text-[10px] font-bold">{n[0]}</span>
-            <span className="flex-1 text-[10px] font-semibold">{n}</span>
-            <span className="rounded-full bg-[#e7f4ea] px-1.5 text-[8px] font-bold" style={{ color: GREEN }}>
-              {s}
-            </span>
-            <span className="text-[10px] font-bold">{a}</span>
           </div>
-        ))}
-      </Phone>
-
-      {/* Buyer phone: the storefront */}
-      <Phone big>
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-peach text-[11px] font-extrabold">ZF</span>
-          <div className="min-w-0">
-            <p className="text-[13px] font-extrabold">Zuri Fashion</p>
-            <p className="text-[9px] text-muted">rizk.tz/zuri-fashion</p>
-          </div>
-        </div>
-        <div className="mt-3 flex gap-1.5">
-          <span className="rounded-full bg-ink px-2.5 py-1 text-[9px] font-bold text-white">{t('Zote', 'All')}</span>
-          <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold">{t('Mpya', 'New')}</span>
-          <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold">{t('Punguzo', 'Sale')}</span>
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {MOCK_PRODUCTS.map((p) => (
-            <div key={p.name} className="overflow-hidden rounded-2xl bg-white">
-              <div className="aspect-square" style={{ background: p.bg }} />
-              <div className="p-2">
-                <p className="truncate text-[10px] font-bold">{p.name}</p>
-                <p className="text-[10px] font-extrabold">TSh {p.price}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 flex items-center gap-2 rounded-full bg-ink py-1.5 pr-1.5 pl-3 text-white">
-          <span className="flex-1 text-[10px] font-bold">2 {t('bidhaa', 'items')} · TSh 63,000</span>
-          <span className="rounded-full bg-white px-3 py-1 text-[9px] font-extrabold text-ink">{t('Agiza', 'Checkout')}</span>
-        </div>
-      </Phone>
-
-      {/* Floating proof: payment checked */}
-      <div className="w-[290px] rounded-[20px] bg-ink p-4 text-white shadow-[0_20px_40px_rgba(31,27,24,0.3)] md:absolute md:right-0 md:bottom-10">
-        <p className="text-[11px] font-bold tracking-wider text-white/60 uppercase">{t('Malipo yamekaguliwa', 'Payment checked')}</p>
-        {[t('Kiasi: TSh 63,000', 'Amount: TSh 63,000'), t('Jina: ZURI FASHION', 'Name: ZURI FASHION'), t('Muamala: haujatumika', 'Transaction: never used')].map((x) => (
-          <p key={x} className="mt-1.5 flex items-center gap-2 text-[13px]">
-            <CheckCircle2 size={15} className="text-[#7fd49a]" /> {x}
-          </p>
         ))}
       </div>
     </div>
   )
 }
 
-function Phone({ children, big, className = '' }: { children: ReactNode; big?: boolean; className?: string }) {
-  return (
-    <div className={`shrink-0 rounded-[38px] bg-ink p-2 shadow-[0_30px_60px_rgba(31,27,24,0.22)] ${big ? 'w-[290px] md:w-[300px]' : 'mb-10 w-[240px]'} ${className}`}>
-      <div className="relative h-full overflow-hidden rounded-[30px] bg-canvas px-3 pt-8 pb-4">
-        <span className="absolute top-2 left-1/2 h-5 w-20 -translate-x-1/2 rounded-full bg-ink" />
-        {children}
-      </div>
-    </div>
-  )
-}
+/* ---------- Strip ---------- */
 
-/* ---------- Categories marquee ---------- */
-
-function Categories() {
+function Strip() {
   const lang = useLang()
   const items = CATEGORIES.filter((c) => c.id !== 'other').map((c) => c[lang])
-  const row = [...items, ...items, ...items]
+  const row = [...items, ...items]
   return (
-    <div className="mt-20 overflow-hidden border-y border-line bg-card py-5 md:mt-24">
-      <div className="flex w-max animate-[marquee_40s_linear_infinite] gap-8 motion-reduce:animate-none">
+    <div className="mt-3 overflow-hidden rounded-[22px] bg-white/60 py-6 md:mt-5">
+      <div className="flex w-max animate-[marquee_45s_linear_infinite] items-center gap-10 motion-reduce:animate-none">
         {[...row, ...row].map((c, i) => (
-          <span key={i} className="flex items-center gap-8 text-[20px] font-bold whitespace-nowrap text-ink/70 md:text-[24px]">
-            {c} <span className="h-1.5 w-1.5 rounded-full bg-peach-deep" />
+          <span key={i} className="flex items-center gap-10 font-display text-[30px] whitespace-nowrap text-[#0e0e0e]/45 md:text-[36px]">
+            {c}
+            <Rosette size={12} className="text-[#0e0e0e]/35 [--rosette-hole:#f6f6f4]" />
           </span>
         ))}
       </div>
@@ -273,44 +275,35 @@ function Categories() {
 function Steps() {
   const t = useT()
   const steps = [
-    {
-      icon: Store,
-      bg: 'bg-peach',
-      title: t('Fungua duka', 'Open your shop'),
-      body: t('Jina, link na WhatsApp yako. Weka Lipa Namba na maeneo ya delivery. Dakika tano tu.', 'Your name, link and WhatsApp. Add your Lipa Namba and delivery areas. Five minutes.'),
-    },
-    {
-      icon: Package,
-      bg: 'bg-lime',
-      title: t('Weka bidhaa', 'Add your products'),
-      body: t('Piga picha kwa simu, weka bei na idadi. Picha zinapunguzwa ukubwa ili wateja wasitumie bando nyingi.', 'Snap a photo, set the price and stock. Photos are shrunk so buyers spend less data.'),
-    },
-    {
-      icon: Link2,
-      bg: 'bg-lilac',
-      title: t('Shiriki na uuze', 'Share and sell'),
-      body: t('Weka link kwenye bio ya Instagram, TikTok na status ya WhatsApp. Oda zinakuja zikiwa kamili.', 'Put the link in your Instagram and TikTok bio and your WhatsApp status. Orders arrive complete.'),
-    },
-  ]
+    [Store, t('Fungua duka', 'Open your shop'), t('Jina, link na WhatsApp yako. Weka Lipa Namba na maeneo ya delivery.', 'Your name, link and WhatsApp. Add your Lipa Namba and delivery areas.')],
+    [Package, t('Weka bidhaa', 'Add products'), t('Piga picha kwa simu, weka bei na idadi. Picha zinapunguzwa ili wateja watumie bando kidogo.', 'Snap a photo, set price and stock. Photos are shrunk so buyers spend less data.')],
+    [Link2, t('Shiriki na uuze', 'Share and sell'), t('Weka link kwenye bio ya Instagram, TikTok na status ya WhatsApp.', 'Put the link in your Instagram and TikTok bio and your WhatsApp status.')],
+  ] as const
   return (
-    <Wrap id="how" className="scroll-mt-20 pt-20 md:pt-28">
-      <Eyebrow>{t('Inavyofanya kazi', 'How it works')}</Eyebrow>
-      <H2>{t('Hatua tatu hadi mauzo ya kwanza.', 'Three steps to your first sale.')}</H2>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {steps.map((s, i) => (
-          <div key={s.title} className="card p-6">
-            <div className="flex items-center justify-between">
-              <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${s.bg}`}>
-                <s.icon size={22} />
-              </span>
-              <span className="text-[40px] font-extrabold text-line">0{i + 1}</span>
+    <Section id="how">
+      <div className="grid gap-6 md:grid-cols-[1fr_1.4fr] md:items-end">
+        <div>
+          <Eyebrow>{t('Inavyofanya kazi', 'How it works')}</Eyebrow>
+          <Display className="mt-5">{t('Hatua tatu hadi mauzo ya kwanza.', 'Three steps to your first sale.')}</Display>
+        </div>
+      </div>
+      <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-5">
+        {steps.map(([Icon, title, body], i) => (
+          <Panel key={title} className="p-6 md:p-8">
+            <div className="flex items-start justify-between">
+              <Arch className="h-16 w-12" frame={false}>
+                <div className="flex h-full items-end justify-center bg-[#0e0e0e] pb-3 text-white">
+                  <Icon size={20} />
+                </div>
+              </Arch>
+              <span className="font-display text-[56px] leading-none text-[#0e0e0e]/15">0{i + 1}</span>
             </div>
-            <h3 className="mt-6 text-[22px] font-extrabold">{s.title}</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink/70">{s.body}</p>
-          </div>
+            <h3 className="mt-8 font-display text-[32px] leading-none">{title}</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-[#4a4a4a]">{body}</p>
+          </Panel>
         ))}
       </div>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -319,55 +312,58 @@ function Steps() {
 function Payments() {
   const t = useT()
   return (
-    <Wrap id="pay" className="scroll-mt-20 pt-20 md:pt-28">
-      <div className="grid items-center gap-10 md:grid-cols-2">
-        <div>
+    <Section id="pay">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
+        <Panel className="p-6 md:p-12">
           <Eyebrow>{t('Malipo', 'Payments')}</Eyebrow>
-          <H2>{t('Kila shilingi inaenda kwako.', 'Every shilling goes to you.')}</H2>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink/70">
+          <Display className="mt-5">{t('Kila shilingi inaenda kwako.', 'Every shilling goes to you.')}</Display>
+          <p className="mt-5 text-[16px] leading-relaxed text-[#4a4a4a]">
             {t(
               'Mteja analipa Lipa Namba yako moja kwa moja, kisha anabandika SMS ya malipo. RIZK inakagua kiasi, jina na namba ya muamala, na haikubali muamala uliotumika kwenye oda nyingine. Wewe unathibitisha kwa kubofya mara moja.',
-              'The buyer pays your Lipa Namba directly, then pastes the payment SMS. RIZK checks the amount, the name and the transaction ID, and refuses a transaction already used on another order. You confirm with one tap.',
+              'The buyer pays your Lipa Namba directly, then pastes the payment SMS. RIZK checks the amount, the name and the transaction ID, and refuses one already used on another order. You confirm with one tap.',
             )}
           </p>
-          <ul className="mt-6 space-y-3">
+          <ul className="mt-8 divide-y divide-black/10 border-y border-black/10">
             {[
-              [Smartphone, t('M-Pesa, Mixx by Yas, Airtel Money, HaloPesa', 'M-Pesa, Mixx by Yas, Airtel Money, HaloPesa')],
+              [Smartphone, 'M-Pesa · Mixx by Yas · Airtel Money · HaloPesa'],
               [Banknote, t('Cash wakati wa kupokea, ukitaka', 'Cash on delivery, if you want it')],
               [ShieldCheck, t('RIZK haishiki pesa yako hata siku moja', 'RIZK never holds your money')],
             ].map(([Icon, label]) => {
               const I = Icon as typeof Smartphone
               return (
-                <li key={label as string} className="flex items-center gap-3 text-[15px] font-semibold">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-card shadow-[0_4px_14px_rgba(60,40,20,0.06)]">
-                    <I size={17} />
-                  </span>
-                  {label as string}
+                <li key={label as string} className="flex items-center gap-3 py-3.5 text-[15px]">
+                  <I size={18} /> {label as string}
                 </li>
               )
             })}
           </ul>
-        </div>
-        <div className="card p-5 md:p-7">
-          <p className="text-sm font-bold">{t('SMS ya mteja', 'Buyer’s SMS')}</p>
-          <p className="mt-2 rounded-2xl bg-canvas px-4 py-3 font-mono text-[13px] leading-relaxed text-ink/80">
-            QK48ZX91 Imethibitishwa. Tsh63,000.00 imelipwa kwa ZURI FASHION tarehe 6/11/26 saa 4:12 PM.
-          </p>
-          <div className="mt-4 space-y-2.5">
-            {[
-              t('Kiasi kinalingana na oda', 'Amount matches the order'),
-              t('Jina ni la duka lako', 'Name is your shop’s'),
-              t('Namba ya muamala haijatumika', 'Transaction ID never used before'),
-            ].map((x) => (
-              <p key={x} className="flex items-center gap-2.5 text-[15px]">
-                <CheckCircle2 size={19} style={{ color: GREEN }} /> {x}
-              </p>
-            ))}
+        </Panel>
+        <div className="relative overflow-hidden rounded-[28px] bg-[#0e0e0e] p-6 text-white md:p-12">
+          <Lattice size={52} stroke="#fff" opacity={0.08} />
+          <div className="relative">
+            <p className="text-[13px] tracking-[0.08em] text-white/50 uppercase">{t('SMS ya mteja', 'Buyer’s SMS')}</p>
+            <p className="mt-3 rounded-[18px] border border-white/15 bg-white/5 px-5 py-4 font-mono text-[13px] leading-relaxed text-white/85">
+              QK48ZX91 Imethibitishwa. Tsh63,000.00 imelipwa kwa ZURI FASHION tarehe 6/11/26 saa 4:12 PM.
+            </p>
+            <div className="mt-6 space-y-0 divide-y divide-white/10">
+              {[
+                t('Kiasi kinalingana na oda', 'Amount matches the order'),
+                t('Jina ni la duka lako', 'Name is your shop’s'),
+                t('Namba ya muamala haijatumika', 'Transaction ID never used before'),
+              ].map((x) => (
+                <p key={x} className="flex items-center gap-3 py-3.5 text-[15px]">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#0e0e0e]">
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                  {x}
+                </p>
+              ))}
+            </div>
+            <div className="mt-6 rounded-[16px] bg-white py-4 text-center text-[15px] font-semibold text-[#0e0e0e]">{t('Nimepokea malipo', 'Payment received')}</div>
           </div>
-          <div className="mt-5 rounded-2xl bg-ink py-3.5 text-center text-[15px] font-bold text-white">{t('Nimepokea malipo', 'Payment received')}</div>
         </div>
       </div>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -377,49 +373,51 @@ function Orders() {
   const t = useT()
   const statuses = [t('Imepokelewa', 'Received'), t('Imethibitishwa', 'Confirmed'), t('Njiani', 'On the way'), t('Imefika', 'Delivered')]
   return (
-    <Wrap className="pt-20 md:pt-28">
-      <div className="grid items-center gap-10 md:grid-cols-2">
-        <div className="order-2 card p-5 md:order-1 md:p-7">
+    <Section>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr] md:gap-5">
+        <Panel className="order-2 p-6 md:order-1 md:p-10">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[20px] font-extrabold">Baraka Mollel</p>
-              <p className="text-sm text-muted">+255 713 456 789</p>
+              <p className="font-display text-[32px] leading-none">Baraka Mollel</p>
+              <p className="mt-1 text-sm text-[#6b6b6b]">+255 713 456 789</p>
             </div>
-            <span className="rounded-full bg-sky px-3 py-1 text-xs font-bold">#8UU3RE</span>
+            <span className="rounded-full border border-black/15 px-3 py-1 font-mono text-xs">#8UU3RE</span>
           </div>
-          <p className="mt-3 flex items-center gap-2 text-[15px]">
+          <p className="mt-4 flex items-center gap-2 text-[15px]">
             <MapPin size={16} /> <b>Mikocheni</b> · {t('karibu na Shell', 'near the Shell station')}
           </p>
-          <div className="mt-5 flex items-center">
+          <div className="mt-7 flex items-center">
             {statuses.map((s, i) => (
               <div key={s} className="flex flex-1 items-center last:flex-none">
-                <div className="flex flex-col items-center gap-1">
-                  <span className={`flex h-7 w-7 items-center justify-center rounded-full ${i < 3 ? 'bg-ink text-white' : 'bg-line text-muted'}`}>
-                    {i < 2 ? <Check size={14} strokeWidth={3} /> : <span className="text-[11px] font-bold">{i + 1}</span>}
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className={`flex h-8 w-8 items-center justify-center rounded-full ${i < 3 ? 'bg-[#0e0e0e] text-white' : 'border border-black/20 text-[#6b6b6b]'}`}>
+                    {i < 2 ? <Check size={15} strokeWidth={3} /> : <span className="text-xs font-semibold">{i + 1}</span>}
                   </span>
-                  <span className="w-16 text-center text-[10px] font-semibold text-muted">{s}</span>
+                  <span className="w-16 text-center text-[11px] text-[#6b6b6b]">{s}</span>
                 </div>
-                {i < statuses.length - 1 && <div className={`mx-1 mb-4 h-1 flex-1 rounded-full ${i < 2 ? 'bg-ink' : 'bg-line'}`} />}
+                {i < statuses.length - 1 && <div className={`mx-1 mb-5 h-px flex-1 ${i < 2 ? 'bg-[#0e0e0e]' : 'bg-black/15'}`} />}
               </div>
             ))}
           </div>
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-line py-3 text-center text-sm font-bold">{t('Piga', 'Call')}</div>
-            <div className="rounded-2xl bg-[#1f8f4e] py-3 text-center text-sm font-bold text-white">WhatsApp</div>
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            <div className="rounded-[14px] border border-black/15 py-3.5 text-center text-sm font-semibold">{t('Piga', 'Call')}</div>
+            <div className="flex items-center justify-center gap-2 rounded-[14px] bg-[#0e0e0e] py-3.5 text-center text-sm font-semibold text-white">
+              <MessageCircle size={16} /> WhatsApp
+            </div>
           </div>
-        </div>
-        <div className="order-1 md:order-2">
+        </Panel>
+        <Panel className="order-1 p-6 md:order-2 md:p-12">
           <Eyebrow>{t('Oda', 'Orders')}</Eyebrow>
-          <H2>{t('Oda kamili. Bila kuuliza mara kumi.', 'Complete orders. No ten questions.')}</H2>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink/70">
+          <Display className="mt-5">{t('Oda kamili. Bila kuuliza mara kumi.', 'Complete orders. No ten questions.')}</Display>
+          <p className="mt-5 text-[16px] leading-relaxed text-[#4a4a4a]">
             {t(
               'Kila oda inakuja na jina, namba, eneo, alama ya karibu na bidhaa zote. Mteja anapata ukurasa wa kufuatilia oda yake, na kitufe cha kukutumia oda kwa WhatsApp. Stock inapungua yenyewe ukithibitisha.',
-              'Every order comes with the name, number, area, a nearby landmark and every item. The buyer gets a page to follow the order, plus a button to send it to you on WhatsApp. Stock goes down by itself when you confirm.',
+              'Every order comes with the name, number, area, a nearby landmark and every item. The buyer gets a page to follow the order and a button to send it to you on WhatsApp. Stock goes down by itself when you confirm.',
             )}
           </p>
-        </div>
+        </Panel>
       </div>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -429,15 +427,15 @@ function Dashboard() {
   const t = useT()
   const bars = [22, 38, 30, 55, 42, 68, 90]
   return (
-    <Wrap className="pt-20 md:pt-28">
+    <Section>
       <div className="text-center">
         <Eyebrow>{t('Dashibodi', 'Dashboard')}</Eyebrow>
-        <H2>{t('Biashara yako, kwa namba.', 'Your business, in numbers.')}</H2>
-        <p className="mx-auto mt-4 max-w-[560px] text-[17px] text-ink/70">
+        <Display className="mx-auto mt-5 max-w-[760px]">{t('Biashara yako, kwa namba.', 'Your business, in numbers.')}</Display>
+        <p className="mx-auto mt-5 max-w-[560px] text-[16px] text-[#4a4a4a]">
           {t('Mauzo, oda, wageni na bidhaa zinazopendwa. Pia unajua wateja wametoka Instagram, TikTok au WhatsApp.', 'Sales, orders, visitors and your best products. You also see whether buyers came from Instagram, TikTok or WhatsApp.')}
         </p>
       </div>
-      <div className="mx-auto mt-10 max-w-[900px] overflow-hidden rounded-[20px] border border-[#ebe9e6] bg-white">
+      <Panel className="mx-auto mt-10 max-w-[960px] overflow-hidden">
         <div className="grid grid-cols-2 md:grid-cols-4">
           {[
             [t('Mauzo', 'Sales'), 'TSh 1.2M', '+22%'],
@@ -445,25 +443,23 @@ function Dashboard() {
             [t('Wageni', 'Visitors'), '1,240', '+31%'],
             [t('Wanaonunua', 'Conversion'), '3.1%', '+0.4%'],
           ].map(([l, v, d], i) => (
-            <div key={l} className={`border-[#ebe9e6] p-4 md:p-5 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b md:border-b-0' : ''} ${i === 1 ? 'md:border-r' : ''}`}>
-              <p className="text-[13px] text-muted">{l}</p>
-              <p className="mt-1 text-[22px] font-extrabold md:text-[26px]">{v}</p>
-              <span className="mt-2 inline-block rounded-full bg-[#e7f4ea] px-2 py-0.5 text-xs font-bold" style={{ color: GREEN }}>
-                {d}
-              </span>
+            <div key={l} className={`border-black/10 p-5 md:p-6 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b md:border-b-0' : ''} ${i === 1 ? 'md:border-r' : ''}`}>
+              <p className="text-[13px] text-[#6b6b6b]">{l}</p>
+              <p className="mt-1 font-display text-[34px] leading-none md:text-[40px]">{v}</p>
+              <span className="mt-3 inline-block rounded-full border border-black/15 px-2 py-0.5 text-xs font-semibold">{d}</span>
             </div>
           ))}
         </div>
-        <div className="border-t border-[#ebe9e6] p-5">
+        <div className="border-t border-black/10 p-6">
           <div className="flex h-36 items-end gap-2 md:gap-4">
             {bars.map((h, i) => (
-              <span key={i} className="flex-1 rounded-t-md" style={{ height: `${h}%`, background: i === bars.length - 1 ? GREEN : '#efeeeb' }} />
+              <span key={i} className="flex-1 rounded-t-full" style={{ height: `${h}%`, background: i === bars.length - 1 ? INK : '#e6e5e2' }} />
             ))}
           </div>
         </div>
-      </div>
-      <p className="mt-3 text-center text-xs text-muted">{t('Mfano wa namba, si data halisi.', 'Example numbers, not real data.')}</p>
-    </Wrap>
+      </Panel>
+      <p className="mt-3 text-center text-xs text-[#6b6b6b]">{t('Mfano wa namba, si data halisi.', 'Example numbers, not real data.')}</p>
+    </Section>
   )
 }
 
@@ -482,22 +478,23 @@ function Everything() {
     [BarChart3, t('Takwimu', 'Analytics'), t('Wageni, mauzo, vyanzo', 'Visitors, sales, sources')],
   ] as const
   return (
-    <Wrap className="pt-20 md:pt-28">
+    <Section>
       <Eyebrow>{t('Na kila kitu kingine', 'And everything else')}</Eyebrow>
-      <H2>{t('Zana za duka kubwa, kwenye simu yako.', 'Big-store tools, on your phone.')}</H2>
-      <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <Display className="mt-5 max-w-[760px]">{t('Zana za duka kubwa, kwenye simu yako.', 'Big-store tools, on your phone.')}</Display>
+      <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
         {items.map(([Icon, title, sub]) => (
-          <div key={title} className="card p-5">
+          <Panel key={title} className="p-5 md:p-6">
             <Icon size={22} />
-            <p className="mt-5 text-[16px] font-extrabold">{title}</p>
-            <p className="mt-1 text-[13px] text-muted">{sub}</p>
-          </div>
+            <p className="mt-6 text-[16px] font-semibold">{title}</p>
+            <p className="mt-1 text-[13px] text-[#6b6b6b]">{sub}</p>
+          </Panel>
         ))}
       </div>
-      <p className="mt-4 text-sm text-muted">
+      <p className="mt-5 flex items-center gap-2 text-sm text-[#6b6b6b]">
+        <Rosette size={12} className="text-[#0e0e0e] [--rosette-hole:#efeeeb]" />
         {t('Inakuja hivi karibuni: Rizko, msaidizi wa AI anayejibu wateja, na kura za bidhaa bora za wiki.', 'Coming soon: Rizko, an AI assistant that answers buyers, and weekly best-product votes.')}
       </p>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -506,35 +503,40 @@ function Everything() {
 function Pricing({ start }: { start: string }) {
   const t = useT()
   return (
-    <Wrap id="pricing" className="scroll-mt-20 pt-20 md:pt-28">
-      <div className="text-center">
-        <Eyebrow>{t('Bei', 'Pricing')}</Eyebrow>
-        <H2>{t('Anza bure. Leo.', 'Start free. Today.')}</H2>
+    <Section id="pricing">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
+        <Panel className="p-6 md:p-12">
+          <Eyebrow>{t('Bei', 'Pricing')}</Eyebrow>
+          <Display className="mt-5">{t('Anza bure. Leo.', 'Start free. Today.')}</Display>
+          <p className="mt-5 text-[16px] text-[#4a4a4a]">{t('Hakuna kamisheni kwenye mauzo yako. Tutatangaza vifurushi vya kulipia mapema kabla havijaanza.', 'No commission on your sales. We will announce paid plans well before they start.')}</p>
+        </Panel>
+        <div className="relative overflow-hidden rounded-[28px] bg-[#0e0e0e] p-6 text-white md:p-12">
+          <Lattice size={52} stroke="#fff" opacity={0.08} />
+          <div className="relative">
+            <p className="text-[15px] text-white/60">{t('Wauzaji wa kwanza', 'Early sellers')}</p>
+            <p className="mt-2 font-display text-[72px] leading-none">
+              TSh 0 <span className="font-sans text-[16px] text-white/50">/ {t('mwezi', 'month')}</span>
+            </p>
+            <ul className="mt-8 divide-y divide-white/10 border-y border-white/10">
+              {[
+                t('Duka lako kwenye rizk.tz/jina', 'Your shop at rizk.tz/name'),
+                t('Lipa Namba na cash wakati wa kupokea', 'Lipa Namba and cash on delivery'),
+                t('Oda, stock na delivery', 'Orders, stock and delivery'),
+                t('Dashibodi na takwimu', 'Dashboard and analytics'),
+                t('Kiswahili na Kiingereza', 'Swahili and English'),
+              ].map((x) => (
+                <li key={x} className="flex items-center gap-3 py-3 text-[15px]">
+                  <Check size={16} strokeWidth={3} /> {x}
+                </li>
+              ))}
+            </ul>
+            <Link to={start} className="mt-8 flex h-14 items-center justify-center gap-2 rounded-[16px] bg-white text-[16px] font-semibold text-[#0e0e0e]">
+              {t('Anza bure', 'Start free')} <ArrowUpRight size={18} />
+            </Link>
+          </div>
+        </div>
       </div>
-      <div className="card mx-auto mt-10 max-w-[480px] p-7">
-        <p className="text-[15px] font-bold">{t('Wauzaji wa kwanza', 'Early sellers')}</p>
-        <p className="mt-2 text-[44px] leading-none font-extrabold">
-          TSh 0 <span className="text-[16px] font-semibold text-muted">/ {t('mwezi', 'month')}</span>
-        </p>
-        <p className="mt-2 text-sm text-muted">{t('Hakuna kamisheni kwenye mauzo yako.', 'No commission on your sales.')}</p>
-        <ul className="mt-6 space-y-2.5 text-[15px]">
-          {[
-            t('Duka lako kwenye rizk.tz/jina', 'Your shop at rizk.tz/name'),
-            t('Lipa Namba na cash wakati wa kupokea', 'Lipa Namba and cash on delivery'),
-            t('Oda, stock na delivery', 'Orders, stock and delivery'),
-            t('Dashibodi na takwimu', 'Dashboard and analytics'),
-            t('Kiswahili na Kiingereza', 'Swahili and English'),
-          ].map((x) => (
-            <li key={x} className="flex items-center gap-2.5">
-              <Check size={17} strokeWidth={3} style={{ color: GREEN }} /> {x}
-            </li>
-          ))}
-        </ul>
-        <Link to={start} className="btn mt-7 w-full">
-          {t('Anza bure', 'Start free')}
-        </Link>
-      </div>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -543,51 +545,33 @@ function Pricing({ start }: { start: string }) {
 function Faq() {
   const t = useT()
   const qs = [
-    [
-      t('RIZK inagharimu kiasi gani?', 'What does RIZK cost?'),
-      t('Ni bure kuanza, na hatuchukui kamisheni kwenye mauzo yako. Tutatangaza vifurushi vya kulipia mapema kabla havijaanza.', 'It is free to start and we take no commission on your sales. We will announce paid plans well before they start.'),
-    ],
-    [
-      t('Napokeaje pesa?', 'How do I get paid?'),
-      t('Mteja analipa Lipa Namba au namba yako moja kwa moja, au cash akipokea mzigo. Pesa haipiti kwetu.', 'The buyer pays your Lipa Namba or number directly, or cash on delivery. The money never passes through us.'),
-    ],
-    [
-      t('Nitajuaje kama mteja amelipa kweli?', 'How do I know a buyer really paid?'),
-      t('Mteja anabandika SMS ya malipo. Tunakagua kiasi, jina na namba ya muamala, na tunakataa muamala uliotumika tayari. Bado angalia simu yako kabla ya kuthibitisha.', 'The buyer pastes the payment SMS. We check the amount, name and transaction ID and refuse one already used. Still check your phone before you confirm.'),
-    ],
-    [
-      t('Nahitaji website au programmer?', 'Do I need a website or a developer?'),
-      t('Hapana. Unafungua duka kwenye simu yako kwa dakika chache, na unapata link ya kushiriki.', 'No. You open the shop on your phone in a few minutes and get a link to share.'),
-    ],
-    [
-      t('Nani anafanya delivery?', 'Who does the delivery?'),
-      t('Kwa sasa wewe, na boda yako. Unaweka maeneo yako na bei ya delivery kila eneo, na mteja anachagua wakati wa kuagiza.', 'For now you do, with your own boda. You set your areas and a fee for each, and the buyer picks one when ordering.'),
-    ],
-    [
-      t('Naweza kuuza nini?', 'What can I sell?'),
-      t('Nguo, viatu, vipodozi, manukato, elektroniki, chakula na zaidi. Bidhaa haramu haziruhusiwi.', 'Clothes, shoes, cosmetics, perfumes, electronics, food and more. Illegal goods are not allowed.'),
-    ],
+    [t('RIZK inagharimu kiasi gani?', 'What does RIZK cost?'), t('Ni bure kuanza, na hatuchukui kamisheni kwenye mauzo yako. Tutatangaza vifurushi vya kulipia mapema kabla havijaanza.', 'It is free to start and we take no commission on your sales. We will announce paid plans well before they start.')],
+    [t('Napokeaje pesa?', 'How do I get paid?'), t('Mteja analipa Lipa Namba au namba yako moja kwa moja, au cash akipokea mzigo. Pesa haipiti kwetu.', 'The buyer pays your Lipa Namba or number directly, or cash on delivery. The money never passes through us.')],
+    [t('Nitajuaje kama mteja amelipa kweli?', 'How do I know a buyer really paid?'), t('Mteja anabandika SMS ya malipo. Tunakagua kiasi, jina na namba ya muamala, na tunakataa muamala uliotumika tayari. Bado angalia simu yako kabla ya kuthibitisha.', 'The buyer pastes the payment SMS. We check the amount, name and transaction ID and refuse one already used. Still check your phone before you confirm.')],
+    [t('Nahitaji website au programmer?', 'Do I need a website or a developer?'), t('Hapana. Unafungua duka kwenye simu yako kwa dakika chache, na unapata link ya kushiriki.', 'No. You open the shop on your phone in a few minutes and get a link to share.')],
+    [t('Nani anafanya delivery?', 'Who does the delivery?'), t('Kwa sasa wewe, na boda yako. Unaweka maeneo yako na bei ya delivery kila eneo, na mteja anachagua wakati wa kuagiza.', 'For now you do, with your own boda. You set your areas and a fee for each, and the buyer picks one when ordering.')],
+    [t('Naweza kuuza nini?', 'What can I sell?'), t('Nguo, viatu, vipodozi, manukato, elektroniki, chakula na zaidi. Bidhaa haramu haziruhusiwi.', 'Clothes, shoes, cosmetics, perfumes, electronics, food and more. Illegal goods are not allowed.')],
   ]
   return (
-    <Wrap id="faq" className="scroll-mt-20 pt-20 md:pt-28">
-      <div className="grid gap-8 md:grid-cols-[1fr_1.5fr]">
-        <div>
+    <Section id="faq">
+      <div className="grid gap-6 md:grid-cols-[1fr_1.5fr] md:gap-5">
+        <div className="md:pt-4">
           <Eyebrow>{t('Maswali', 'Questions')}</Eyebrow>
-          <H2>{t('Vizuri kujua.', 'Good to know.')}</H2>
+          <Display className="mt-5">{t('Vizuri kujua.', 'Good to know.')}</Display>
         </div>
-        <div className="card divide-y divide-line">
+        <Panel className="divide-y divide-black/10 px-6 md:px-8">
           {qs.map(([q, a]) => (
-            <details key={q} className="group px-5 py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-bold">
+            <details key={q} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-medium">
                 {q}
                 <ChevronDown size={18} className="shrink-0 transition group-open:rotate-180" />
               </summary>
-              <p className="mt-2 text-[15px] leading-relaxed text-ink/70">{a}</p>
+              <p className="mt-3 text-[15px] leading-relaxed text-[#4a4a4a]">{a}</p>
             </details>
           ))}
-        </div>
+        </Panel>
       </div>
-    </Wrap>
+    </Section>
   )
 }
 
@@ -596,16 +580,20 @@ function Faq() {
 function Closing({ start, startLabel }: { start: string; startLabel: string }) {
   const t = useT()
   return (
-    <Wrap className="pt-20 pb-10 md:pt-28">
-      <div className="overflow-hidden rounded-[32px] bg-ink px-6 py-14 text-center text-white md:py-20">
-        <h2 className="mx-auto max-w-[700px] text-[34px] leading-[1.05] font-extrabold tracking-tight md:text-[52px]">
-          {t('Wateja wako tayari wako kwenye simu. Wafikie huko.', 'Your buyers are already on their phones. Meet them there.')}
-        </h2>
-        <p className="mt-4 text-[17px] text-white/70">{t('Fungua duka lako la RIZK leo. Ni bure kuanza.', 'Open your RIZK shop today. It is free to start.')}</p>
-        <Link to={start} className="btn mt-8 bg-white text-ink">
-          {startLabel} <ArrowRight size={18} />
-        </Link>
+    <Section className="pb-10">
+      <div className="relative overflow-hidden rounded-[28px] bg-[#0e0e0e] px-6 py-16 text-center text-white md:py-24">
+        <Lattice size={52} stroke="#fff" opacity={0.1} />
+        <div className="relative">
+          <Rosette size={22} className="mx-auto [--rosette-hole:#0e0e0e]" />
+          <h2 className="mx-auto mt-6 max-w-[820px] font-display text-[48px] leading-[0.95] md:text-[84px]">
+            Risk to get <em>Rizk.</em>
+          </h2>
+          <p className="mt-5 text-[17px] text-white/65">{t('Wateja wako tayari wako kwenye simu. Fungua duka lako leo.', 'Your buyers are already on their phones. Open your shop today.')}</p>
+          <Link to={start} className="mt-9 inline-flex h-14 items-center gap-2 rounded-[16px] bg-white px-7 text-[16px] font-semibold text-[#0e0e0e]">
+            {startLabel} <ArrowRight size={18} />
+          </Link>
+        </div>
       </div>
-    </Wrap>
+    </Section>
   )
 }
