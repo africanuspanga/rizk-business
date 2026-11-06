@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-11-06T14:52:11.896Z",
+        "reason": "User explicitly asked for Geist (Vercel's open-source font) on 2026-11-06"
+      }
+    ]
+  }
+}
