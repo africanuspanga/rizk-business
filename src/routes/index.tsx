@@ -44,7 +44,7 @@ function Landing() {
       <Faq />
       <Closing start={start} startLabel={startLabel} />
       <footer className="mx-auto max-w-[1120px] px-4 pt-6 pb-10 text-center text-xs text-muted md:px-8">
-        RIZK · © {new Date().getFullYear()} Driftmark Technologies Limited · Dar es Salaam
+        RIZK · Risk to get Rizk · © {new Date().getFullYear()} Driftmark Technologies Limited · Dar es Salaam
       </footer>
     </div>
   )
@@ -110,10 +110,10 @@ function Hero({ start, startLabel }: { start: string; startLabel: string }) {
           <span className="hidden sm:inline">{t('Kwa wauzaji wa Instagram, TikTok na WhatsApp', 'For Instagram, TikTok and WhatsApp sellers')}</span>
         </span>
         <h1 className="mx-auto mt-6 max-w-[900px] text-[44px] leading-[0.98] font-extrabold tracking-[-0.03em] md:text-[84px]">
-          <span className="block sm:inline">{t('Duka lako.', 'Your shop.')} </span>
-          <span className="block sm:inline">{t('Link yako.', 'Your link.')}</span>
+          {/* Brand tagline: English wordplay in both languages (risk = courage, rizk = riziki, livelihood). */}
+          <span className="block">Risk to get</span>
           <span className="block" style={{ color: GREEN }}>
-            {t('Riziki yako.', 'Your business.')}
+            Rizk.
           </span>
         </h1>
         <p className="mx-auto mt-6 max-w-[620px] text-[16px] leading-relaxed text-ink/70 md:text-[19px]">

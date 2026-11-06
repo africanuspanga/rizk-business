@@ -1,6 +1,6 @@
 # RIZK
 
-Shop in bio for social sellers. Duka lako. Link yako. Riziki yako.
+**Risk to get Rizk.** Shop in bio for social sellers.
 
 A seller opens a shop in two minutes, adds products from their phone and shares one link
 (`rizk.tz/<shop>`) on Instagram, TikTok and WhatsApp. Buyers order with their name, phone,
